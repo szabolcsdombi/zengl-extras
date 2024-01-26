@@ -16,7 +16,7 @@ class Loader:
         from OpenGL import GL
 
         self.loader = loader
-        link_program_ptr = self.loader.load_opengl_function('glLinkProgram')
+        link_program_ptr = self.loader.load_opengl_function("glLinkProgram")
         link_program = ctypes.cast(link_program_ptr, ctypes.CFUNCTYPE(None, ctypes.c_int32))
 
         def link_program_hook(program):
@@ -34,7 +34,7 @@ class Loader:
         self.link_program_callback = ctypes.cast(_state.link_program_hook, ctypes.c_void_p).value
 
     def load_opengl_function(self, name):
-        if name == 'glLinkProgram':
+        if name == "glLinkProgram":
             return self.link_program_callback
         return self.loader.load_opengl_function(name)
 
@@ -69,16 +69,16 @@ def feedback(pipeline):
     return np.frombuffer(bytes(data), dtype=_state.dtype)
 
 
-def enable_transform_feedback(varyings=None, vertex_size=None, dtype='f4'):
+def enable_transform_feedback(varyings=None, vertex_size=None, dtype="f4"):
     if _state.link_program_callback is None:
         zengl.init(Loader(_zengl.DefaultLoader()))
 
     if varyings is None:
-        varyings = ['gl_Position']
+        varyings = ["gl_Position"]
         vertex_size = 16
 
     if vertex_size is None:
-        raise ValueError('invalid vertex_size')
+        raise ValueError("invalid vertex_size")
 
     _state.varyings = [name for name in varyings]
     _state.vertex_size = vertex_size

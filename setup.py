@@ -27,7 +27,7 @@ win = Extension(
 
 setup(
     name="zengl-extras",
-    version="0.1.0",
+    version="0.2.0",
     packages=["zengl_extras", "zengl_extras.extensions"],
     ext_modules=[cudart, opencl, win],
     install_requires=["zengl", "requests", "progress", "colorama"],

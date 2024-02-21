@@ -68,12 +68,13 @@ def enable_debug():
         log = log.rstrip(b'\x00').strip().decode().splitlines()
         errors = defaultdict(list)
         for line in log:
-            match = re.search(r'\d+:(\d+):', line)
+            match = re.search(r'\d+:?\(?(\d+)\)?\s*:', line)
             if not match:
                 errors[-1].append(line)
                 continue
             line_number = int(match.group(1))
-            errors[line_number].append(line[match.span()[1] :].strip())
+            match_end = match.span()[1]
+            errors[line_number].append(line[match_end:].strip())
         res = io.StringIO()
         if shader_type == 0x8B31:
             print('Vertex Shader', file=res)
@@ -115,9 +116,55 @@ def enable_debug():
     _zengl.linker_error = _linker_error
 
 
-def init(debug=True, gpu=True):
+def make_process_dpi_aware():
+    import ctypes
+    import os
+
+    os.environ['SDL_WINDOWS_DPI_AWARENESS'] = 'permonitorv2'
+
+    try:
+        ctypes.windll.user32.SetProcessDPIAware()
+    except:
+        pass
+
+    try:
+        ctypes.windll.shcore.SetProcessDpiAwareness(2)
+    except:
+        pass
+
+
+def require_high_performance():
+    import ctypes
+
+    try:
+        ctypes.windll.powrprof.PowerSetActiveScheme.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+        ctypes.windll.kernel32.SetPriorityClass.argtypes = [ctypes.c_void_p, ctypes.c_uint32]
+        ctypes.windll.kernel32.GetCurrentProcess.restype = ctypes.c_void_p
+        ctypes.windll.powrprof.PowerSetActiveScheme(None, bytes.fromhex('da7f5e8cbfe8964a9a85a6e23a8c635c'))
+        ctypes.windll.kernel32.SetPriorityClass(ctypes.windll.kernel32.GetCurrentProcess(), 0x80)
+    except:
+        pass
+
+
+def init(debug=True, gpu=True, dpi_aware=True, high_performance=True):
+    '''
+        ZenGL Examples Extras
+        ---------------------
+
+        - better shader compiler errors
+        - makes the process dpi aware
+        - requires the high-performance gpu
+        - requires a high-performance power plan
+    '''
+
     if debug:
         enable_debug()
 
     if gpu:
         require_gpu()
+
+    if dpi_aware:
+        make_process_dpi_aware()
+
+    if high_performance:
+        require_high_performance()

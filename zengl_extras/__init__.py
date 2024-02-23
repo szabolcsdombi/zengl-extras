@@ -146,7 +146,19 @@ def require_high_performance():
         pass
 
 
-def init(debug=True, gpu=True, dpi_aware=True, high_performance=True):
+def require_opengl_core():
+    try:
+        import pygame
+        pygame.display.init()
+        pygame.display.gl_set_attribute(pygame.GL_CONTEXT_MAJOR_VERSION, 3)
+        pygame.display.gl_set_attribute(pygame.GL_CONTEXT_MINOR_VERSION, 3)
+        pygame.display.gl_set_attribute(pygame.GL_CONTEXT_PROFILE_MASK, pygame.GL_CONTEXT_PROFILE_CORE)
+        pygame.display.gl_set_attribute(pygame.GL_CONTEXT_FORWARD_COMPATIBLE_FLAG, 1)
+    except:
+        pass
+
+
+def init(debug=True, gpu=True, dpi_aware=True, high_performance=True, opengl_core=True):
     '''
         ZenGL Examples Extras
         ---------------------
@@ -155,6 +167,7 @@ def init(debug=True, gpu=True, dpi_aware=True, high_performance=True):
         - makes the process dpi aware
         - requires the high-performance gpu
         - requires a high-performance power plan
+        - requires opengl core profile
     '''
 
     if debug:
@@ -168,3 +181,6 @@ def init(debug=True, gpu=True, dpi_aware=True, high_performance=True):
 
     if high_performance:
         require_high_performance()
+
+    if opengl_core:
+        require_opengl_core()

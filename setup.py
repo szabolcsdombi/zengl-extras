@@ -30,7 +30,7 @@ opencl = Extension(
 
 setup(
     name='zengl-extras',
-    version='0.5.0',
+    version='0.6.0',
     packages=['zengl_extras'],
     ext_modules=[cudart, opencl],
     install_requires=['zengl', 'requests', 'progress', 'colorama'],

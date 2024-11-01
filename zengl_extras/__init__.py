@@ -76,6 +76,7 @@ def enable_debug():
             match_end = match.span()[1]
             errors[line_number].append(line[match_end:].strip())
         res = io.StringIO()
+        print('\x1b[m', file=res)
         if shader_type == 0x8B31:
             print('Vertex Shader', file=res)
             print('=============', file=res)
@@ -90,14 +91,13 @@ def enable_debug():
             print(f'     | ' + _color_error(error), file=res)
         if not log:
             print(f'     | ' + _color_error('Cannot find the entrypoint, the compiler log is empty'), file=res)
-        raise ValueError(f'GLSL Compile Error:\n\n{res.getvalue()}')
+        raise ValueError(f'GLSL Compile Error:\n\n{res.getvalue()}\n')
 
     def _linker_error(vertex_shader: bytes, fragment_shader: bytes, log: bytes):
         import io
 
-        print(vertex_shader, fragment_shader)
         res = io.StringIO()
-        print(f'log = {log}')
+        print('\x1b[m', file=res)
         print('Vertex Shader', file=res)
         print('=============', file=res)
         for i, line in enumerate(vertex_shader.decode().split('\n'), 1):
@@ -110,7 +110,7 @@ def enable_debug():
         print('', file=res)
         error = log.rstrip(b'\x00').decode().strip()
         print(_color_error(error), file=res)
-        raise ValueError(f'GLSL Linker Error:\n\n{res.getvalue()}')
+        raise ValueError(f'GLSL Linker Error:\n\n{res.getvalue()}\n')
 
     _zengl.compile_error = _compile_error
     _zengl.linker_error = _linker_error
